@@ -7,7 +7,7 @@ import {
   Linkedin, 
   ShieldCheck, 
   Zap
-} from 'lucide';
+} from 'lucide-react';
 
 const App = () => {
   const [formState, setFormState] = useState({
