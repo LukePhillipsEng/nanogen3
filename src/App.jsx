@@ -32,7 +32,7 @@ const App = () => {
     {
       name: "Luke Phillips",
       role: "Chief Executive Officer",
-      bio: "UC Berkeley Materials Science & Engineering. Former SpaceX Engineering Intern, owns full stack development.",
+      bio: "UC Berkeley Materials Science & Engineering & Ex-SpaceX Engineering Intern.",
       education: "Berkeley / SpaceX",
       img: "https://media.licdn.com/dms/image/v2/D4E03AQEp6vMXYZRwIg/profile-displayphoto-crop_800_800/B4EZoFj9EwHMAI-/0/1761029903207?e=1772064000&v=beta&t=9OoMRDpWtgkAfYT5KJ8v0zKXpKSiN4xxWiMtCDxy4YQ",
       linkedin: "https://www.linkedin.com/in/lukephillipseng/"
@@ -40,7 +40,7 @@ const App = () => {
     {
       name: "Leo Levitt",
       role: "Chief Operating Officer",
-      bio: "Yale University Econ. Owns app mechanics and scaling.",
+      bio: "Yale University Econ.",
       education: "Yale",
       img: "https://media.licdn.com/dms/image/v2/D5603AQEMNrKzSCY-Cw/profile-displayphoto-shrink_800_800/profile-displayphoto-shrink_800_800/0/1730323194682?e=1772064000&v=beta&t=S-cKv0FJF4MMS2Jl9ah0WVYe_BOGklcJdVUj3RQyeTg",
       linkedin: "https://www.linkedin.com/in/leo-levitt-11411b177/"
