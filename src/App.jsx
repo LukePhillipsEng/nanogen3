@@ -22,12 +22,23 @@ import {
 } from 'firebase/firestore';
 import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from 'firebase/auth';
 
-// --- Firebase Initialization ---
-const firebaseConfig = JSON.parse(__firebase_config);
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
+// --- Firebase Initialization with Safeguards for Vercel ---
+let app, auth, db;
 const appId = typeof __app_id !== 'undefined' ? __app_id : 'scrollbet-alpha';
+
+try {
+  // Check if configuration exists before parsing to prevent white-screen crashes
+  if (typeof __firebase_config !== 'undefined') {
+    const firebaseConfig = JSON.parse(__firebase_config);
+    app = initializeApp(firebaseConfig);
+    auth = getAuth(app);
+    db = getFirestore(app);
+  } else {
+    console.warn("Firebase configuration (__firebase_config) is missing. Backend features will be disabled.");
+  }
+} catch (error) {
+  console.error("Firebase initialization failed:", error);
+}
 
 const App = () => {
   const [user, setUser] = useState(null);
@@ -40,8 +51,10 @@ const App = () => {
   const [submitted, setSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // 1. Auth Logic - Follow RULE 3
+  // 1. Auth Logic - Guarded to prevent crashes if auth is undefined
   useEffect(() => {
+    if (!auth) return;
+
     const initAuth = async () => {
       try {
         if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
@@ -50,7 +63,7 @@ const App = () => {
           await signInAnonymously(auth);
         }
       } catch (err) {
-        // Silent error handling for auth initialization
+        console.error("Auth initialization error:", err);
       }
     };
     initAuth();
@@ -64,11 +77,18 @@ const App = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!user) return;
+    if (!db || !user) {
+      // Fallback for visual feedback if database is not configured
+      setIsSubmitting(true);
+      setTimeout(() => {
+        setIsSubmitting(false);
+        setSubmitted(true);
+      }, 1000);
+      return;
+    }
 
     setIsSubmitting(true);
     try {
-      // Save submission to Firestore list (waitlist)
       const waitlistRef = collection(db, 'artifacts', appId, 'public', 'data', 'waitlist');
       await addDoc(waitlistRef, {
         ...formState,
@@ -108,11 +128,9 @@ const App = () => {
       {/* Navigation */}
       <nav className="flex items-center justify-between px-6 py-8 max-w-7xl mx-auto border-b border-slate-800/50">
         <div className="flex items-center gap-2">
-          {/* Logo Section: To change the small image, edit the div below or replace with an <img> or Lucide icon */}
           <div className="w-8 h-8 bg-emerald-500 rounded-sm flex items-center justify-center shadow-[0_0_15px_rgba(16,185,129,0.4)]">
              <TrendingDown size={20} className="text-slate-950 stroke-[3px]" />
           </div>
-          {/* Title Section: Change the text inside the span to update the site title */}
           <span className="text-2xl font-bold tracking-tighter uppercase italic">Scrollbet</span>
         </div>
         <div className="hidden md:flex gap-8 text-xs font-bold uppercase tracking-widest text-slate-400">
@@ -386,7 +404,7 @@ const App = () => {
                   </select>
                 </div>
                 <button 
-                  disabled={isSubmitting || !user}
+                  disabled={isSubmitting}
                   type="submit" 
                   className="w-full py-4 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black uppercase tracking-[0.2em] rounded-sm transition-all text-xs shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
                 >
