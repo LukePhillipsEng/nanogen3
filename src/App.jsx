@@ -9,6 +9,7 @@ import {
   Zap,
   ArrowRight,
   AlertCircle,
+  ClockAlert,
   EyeOff
 } from 'lucide-react';
 
@@ -90,7 +91,7 @@ const App = () => {
       <nav className="flex items-center justify-between px-6 py-8 max-w-7xl mx-auto border-b border-slate-800/50">
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 bg-emerald-500 rounded-sm flex items-center justify-center shadow-[0_0_15px_rgba(16,185,129,0.4)]">
-             <TrendingDown size={20} className="text-slate-950 stroke-[3px]" />
+             <ClockAlert size={20} className="text-slate-950 stroke-[3px]" />
           </div>
           <span className="text-2xl font-bold tracking-tighter uppercase italic">Scrollbet</span>
         </div>
@@ -407,7 +408,7 @@ const App = () => {
       <footer className="py-12 border-t border-slate-900 max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-8">
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 bg-emerald-500 rounded-sm flex items-center justify-center shadow-[0_0_15px_rgba(16,185,129,0.4)]">
-             <TrendingDown size={20} className="text-slate-950 stroke-[3px]" />
+             <ClockAlert size={20} className="text-slate-950 stroke-[3px]" />
           </div>
           <span className="text-lg font-bold tracking-tighter uppercase italic">Scrollbet</span>
         </div>
