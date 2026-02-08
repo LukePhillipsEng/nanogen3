@@ -14,7 +14,8 @@ import {
 
 /**
  * Scrollbet Main Application Component
- * To be placed in: src/App.jsx
+ * Using standard fetch for Formspree to ensure maximum compatibility 
+ * across deployment environments.
  */
 const App = () => {
   const [formState, setFormState] = useState({
@@ -23,43 +24,44 @@ const App = () => {
     currentScreenTime: '',
     targetGoal: '-15% Efficiency'
   });
-  const [submitted, setSubmitted] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  const [status, setStatus] = useState({
+    submitting: false,
+    succeeded: false,
+    error: null
+  });
 
-  // Frontend handler following the Vercel Blob + FormData pattern
-  const handleSubmit = async (e) => {
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormState(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleFormSubmit = async (e) => {
     e.preventDefault();
-    setIsSubmitting(true);
+    setStatus({ submitting: true, succeeded: false, error: null });
+
+    // Using the provided Formspree endpoint ID: xpqjwapv
+    const endpoint = "https://formspree.io/f/xpqjwapv";
 
     try {
-      const payload = {
-        ...formState,
-        submittedAt: new Date().toISOString(),
-        platform: 'Scrollbet Alpha'
-      };
-
-      // Create JSON data as a Blob
-      const jsonBlob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
-      
-      // Construct FormData for the API route
-      const formData = new FormData();
-      formData.append('file', jsonBlob, `entry-${Date.now()}-${formState.email.replace(/[^a-zA-Z0-9]/g, '_')}.json`);
-
-      // POST to the Next.js Route Handler
-      const response = await fetch('/api/submit-form', {
+      const response = await fetch(endpoint, {
         method: 'POST',
-        body: formData,
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify(formState)
       });
 
-      if (!response.ok) throw new Error('Sync failed');
-
-      setSubmitted(true);
-    } catch (error) {
-      console.error("Cloud synchronization failed:", error);
-      // Fallback success for previewing UI states
-      setSubmitted(true);
-    } finally {
-      setIsSubmitting(false);
+      if (response.ok) {
+        setStatus({ submitting: false, succeeded: true, error: null });
+        setFormState({ name: '', email: '', currentScreenTime: '', targetGoal: '-15% Efficiency' });
+      } else {
+        const data = await response.json();
+        throw new Error(data.error || 'Submission failed');
+      }
+    } catch (err) {
+      setStatus({ submitting: false, succeeded: false, error: err.message });
     }
   };
 
@@ -96,7 +98,7 @@ const App = () => {
           <a href="#mechanics" className="hover:text-emerald-400 transition-colors">Mechanics</a>
           <a href="#anti-social" className="hover:text-emerald-400 transition-colors">Anti-Social</a>
           <a href="#team" className="hover:text-emerald-400 transition-colors">Founders</a>
-          <a href="#join" className="hover:text-emerald-400 transition-colors text-emerald-500">Waitlist</a>
+          <a href="#join" className="hover:text-emerald-400 transition-colors text-emerald-500 font-bold">Waitlist</a>
         </div>
       </nav>
 
@@ -110,7 +112,7 @@ const App = () => {
             Get Paid to <br />
             <span className="text-emerald-500 italic underline decoration-slate-800">Exit the Glass.</span>
           </h1>
-          <p className="text-xl text-slate-400 mb-10 max-w-xl leading-relaxed italic">
+          <p className="text-xl text-slate-400 mb-10 max-w-xl leading-relaxed italic font-medium">
             Scrollbet is the anti-social media. Monetize your discipline by betting against your own dopamine loops. 
           </p>
           <div className="flex flex-col sm:flex-row gap-4">
@@ -140,8 +142,8 @@ const App = () => {
                 <div className="h-full bg-emerald-500 w-[20%]"></div>
               </div>
               <div className="flex justify-between text-[10px] font-mono text-slate-500 uppercase font-bold tracking-widest">
-                <span>Vercel Blob Sync</span>
-                <span className="text-white font-black italic">Persistent</span>
+                <span>Vercel Integration</span>
+                <span className="text-white font-black italic">Formspree Active</span>
               </div>
             </div>
           </div>
@@ -237,9 +239,9 @@ const App = () => {
 
       {/* Founders Section */}
       <section id="team" className="py-24 max-w-7xl mx-auto px-6">
-        <div className="mb-16">
+        <div className="mb-16 text-center md:text-left">
           <h2 className="text-3xl md:text-4xl font-bold mb-4 uppercase tracking-tighter italic">Founders</h2>
-          <div className="h-0.5 w-20 bg-emerald-500"></div>
+          <div className="h-0.5 w-20 bg-emerald-500 mx-auto md:mx-0"></div>
         </div>
 
         <div className="grid md:grid-cols-2 gap-12 max-w-4xl mx-auto">
@@ -284,94 +286,116 @@ const App = () => {
             <div className="space-y-4">
               <div className="flex items-center gap-4 text-slate-900 font-bold">
                 <div className="w-10 h-10 bg-slate-950 flex items-center justify-center text-emerald-500 rounded-sm shadow-xl"><TrendingDown size={18} /></div>
-                <span className="uppercase tracking-widest text-xs">Join Early Access Waitlist</span>
+                <span className="uppercase tracking-widest text-xs font-black">Join Early Access Waitlist</span>
               </div>
               <div className="flex items-center gap-4 text-slate-900 font-bold">
                 <div className="w-10 h-10 bg-slate-950 flex items-center justify-center text-emerald-500 rounded-sm shadow-xl"><DollarSign size={18} /></div>
-                <span className="uppercase tracking-widest text-xs">Verify Your Baseline</span>
+                <span className="uppercase tracking-widest text-xs font-black">Verify Your Baseline</span>
               </div>
               <div className="flex items-center gap-4 text-slate-900 font-bold">
                 <div className="w-10 h-10 bg-slate-950 flex items-center justify-center text-emerald-500 rounded-sm shadow-xl"><ShieldCheck size={18} /></div>
-                <span className="uppercase tracking-widest text-xs">Secure Alpha Access</span>
+                <span className="uppercase tracking-widest text-xs font-black">Secure Alpha Access</span>
               </div>
             </div>
           </div>
 
           <div className="bg-slate-950 p-8 rounded-sm shadow-2xl text-slate-100 border border-slate-800/50">
-            {submitted ? (
+            {status.succeeded ? (
               <div className="h-[460px] flex flex-col items-center justify-center text-center space-y-4 py-12">
-                <div className="w-16 h-16 bg-emerald-500 rounded-full flex items-center justify-center text-slate-950">
+                <div className="w-16 h-16 bg-emerald-500 rounded-full flex items-center justify-center text-slate-950 shadow-[0_0_30px_rgba(16,185,129,0.3)]">
                   <ShieldCheck size={32} />
                 </div>
-                <h3 className="text-2xl font-bold uppercase tracking-tight text-emerald-500 font-mono">Waitlist Secured</h3>
-                <p className="text-slate-400 font-medium">Your request for early access has been logged in our secure Vercel backend. Batch onboarding in progress.</p>
-                <div className="p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-sm mt-4">
-                  <p className="text-emerald-500 text-[10px] font-bold uppercase tracking-widest">Sync Status: Persistent (Vercel Blob)</p>
-                </div>
+                <h3 className="text-2xl font-bold uppercase tracking-tight text-emerald-500 font-mono italic">Waitlist Secured</h3>
+                <p className="text-slate-400 font-medium text-lg px-4">Thanks for joining the attention refinery.</p>
+                <p className="text-slate-500 text-sm italic">Our team will reach out to verify your baseline metrics shortly.</p>
+                <button 
+                   onClick={() => setStatus({ ...status, succeeded: false })}
+                   className="mt-8 text-[10px] uppercase font-black tracking-widest text-emerald-500 border border-emerald-500/20 px-6 py-3 rounded-sm hover:bg-emerald-500/5 transition-all"
+                >
+                  Register another peer
+                </button>
               </div>
             ) : (
-              <form onSubmit={handleSubmit} className="space-y-6">
+              <form onSubmit={handleFormSubmit} className="space-y-6">
                 <div className="space-y-2 mb-4">
-                   <h3 className="text-xl font-bold uppercase tracking-tight text-emerald-500">Alpha Waitlist</h3>
-                   <p className="text-[10px] text-slate-500 uppercase font-black tracking-widest">Register for limited early access enrollment</p>
+                   <h3 className="text-xl font-bold uppercase tracking-tight text-emerald-500 italic">Alpha Waitlist</h3>
+                   <p className="text-[10px] text-slate-500 uppercase font-black tracking-[0.2em]">Secure Early Access Enrollment</p>
                 </div>
+                
+                {status.error && (
+                  <div className="p-3 bg-rose-500/10 border border-rose-500/20 rounded-sm text-rose-500 text-[10px] font-black uppercase tracking-widest flex items-center gap-2">
+                    <AlertCircle size={14} /> {status.error}
+                  </div>
+                )}
+                
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <label className="text-[10px] font-black uppercase text-slate-500 tracking-widest">Full Name</label>
+                    <label htmlFor="name" className="text-[10px] font-black uppercase text-slate-500 tracking-widest">Full Name</label>
                     <input 
                       required
+                      id="name"
+                      name="name"
                       type="text" 
-                      className="w-full bg-slate-900 border border-slate-800 p-3 rounded-sm focus:outline-none focus:border-emerald-500 transition-colors" 
-                      placeholder="John Galt"
                       value={formState.name}
-                      onChange={(e) => setFormState({...formState, name: e.target.value})}
+                      onChange={handleInputChange}
+                      className="w-full bg-slate-900 border border-slate-800 p-3 rounded-sm focus:outline-none focus:border-emerald-500 transition-colors placeholder:text-slate-700" 
+                      placeholder="John Galt"
                     />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-[10px] font-black uppercase text-slate-500 tracking-widest">Email Address</label>
+                    <label htmlFor="email" className="text-[10px] font-black uppercase text-slate-500 tracking-widest">Email Address</label>
                     <input 
                       required
+                      id="email"
+                      name="email"
                       type="email" 
-                      className="w-full bg-slate-900 border border-slate-800 p-3 rounded-sm focus:outline-none focus:border-emerald-500 transition-colors" 
-                      placeholder="focus@scrollbet.app"
                       value={formState.email}
-                      onChange={(e) => setFormState({...formState, email: e.target.value})}
+                      onChange={handleInputChange}
+                      className="w-full bg-slate-900 border border-slate-800 p-3 rounded-sm focus:outline-none focus:border-emerald-500 transition-colors placeholder:text-slate-700" 
+                      placeholder="focus@scrollbet.app"
                     />
                   </div>
                 </div>
+
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black uppercase text-slate-500 tracking-widest text-emerald-500">Current Average Screen Time</label>
+                  <label htmlFor="screenTime" className="text-[10px] font-black uppercase text-slate-500 tracking-widest text-emerald-500">Current Average Screen Time</label>
                   <input 
                     required
+                    id="screenTime"
+                    name="currentScreenTime"
                     type="text" 
-                    className="w-full bg-slate-900 border border-slate-800 p-3 rounded-sm focus:outline-none focus:border-emerald-500 transition-colors font-mono" 
-                    placeholder="e.g. 5h 30m"
                     value={formState.currentScreenTime}
-                    onChange={(e) => setFormState({...formState, currentScreenTime: e.target.value})}
+                    onChange={handleInputChange}
+                    className="w-full bg-slate-900 border border-slate-800 p-3 rounded-sm focus:outline-none focus:border-emerald-500 transition-colors font-mono placeholder:text-slate-700" 
+                    placeholder="e.g. 5h 30m"
                   />
                 </div>
+
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black uppercase text-slate-500 tracking-widest">Target Reduction Goal</label>
+                  <label htmlFor="targetGoal" className="text-[10px] font-black uppercase text-slate-500 tracking-widest">Target Reduction Goal</label>
                   <select 
+                    id="targetGoal"
+                    name="targetGoal"
                     value={formState.targetGoal}
-                    onChange={(e) => setFormState({...formState, targetGoal: e.target.value})}
-                    className="w-full bg-slate-900 border border-slate-800 p-3 rounded-sm focus:outline-none focus:border-emerald-500 transition-colors font-mono text-xs uppercase tracking-widest"
+                    onChange={handleInputChange}
+                    className="w-full bg-slate-900 border border-slate-800 p-3 rounded-sm focus:outline-none focus:border-emerald-500 transition-colors font-mono text-xs uppercase tracking-widest appearance-none cursor-pointer"
                   >
                     <option>-10% Initial Target</option>
                     <option>-15% Standard Goal</option>
                     <option>-20% Aggressive Efficiency</option>
                   </select>
                 </div>
+
                 <button 
-                  disabled={isSubmitting}
+                  disabled={status.submitting}
                   type="submit" 
-                  className="w-full py-4 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black uppercase tracking-[0.2em] rounded-sm transition-all text-xs shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full py-4 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black uppercase tracking-[0.3em] rounded-sm transition-all text-xs shadow-[0_0_25px_rgba(16,185,129,0.2)] disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98]"
                 >
-                  {isSubmitting ? 'Syncing to Blob...' : 'Request Early Access'}
+                  {status.submitting ? 'Transmitting...' : 'Request Alpha Access'}
                 </button>
-                <div className="flex gap-2 items-center justify-center text-[10px] uppercase text-slate-600 font-bold">
+                <div className="flex gap-2 items-center justify-center text-[10px] uppercase text-slate-600 font-bold tracking-widest">
                   <AlertCircle size={10} />
-                  Privacy-first enrollment. Join the attention refinery.
+                  Verified Enrollment Integration
                 </div>
               </form>
             )}
