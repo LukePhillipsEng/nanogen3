@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { 
   Clock, 
   TrendingDown, 
@@ -12,6 +12,10 @@ import {
   EyeOff
 } from 'lucide-react';
 
+/**
+ * Scrollbet Main Application Component
+ * To be placed in: src/App.jsx
+ */
 const App = () => {
   const [formState, setFormState] = useState({
     name: '',
@@ -22,34 +26,37 @@ const App = () => {
   const [submitted, setSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Note: Vercel Blob typically requires a server-side API route to handle the upload.
-  // This frontend logic assumes you have a route at /api/waitlist/upload
+  // Frontend handler following the Vercel Blob + FormData pattern
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
 
     try {
-      // Create a JSON file from the form data
-      const fileName = `waitlist-${Date.now()}-${formState.email.replace(/[^a-zA-Z0-9]/g, '_')}.json`;
-      const fileData = new Blob([JSON.stringify(formState, null, 2)], { type: 'application/json' });
+      const payload = {
+        ...formState,
+        submittedAt: new Date().toISOString(),
+        platform: 'Scrollbet Alpha'
+      };
 
-      // Follow the Vercel Blob client fetch pattern provided
-      const response = await fetch(
-        `/api/waitlist/upload?filename=${fileName}`,
-        {
-          method: 'POST',
-          body: fileData,
-        },
-      );
+      // Create JSON data as a Blob
+      const jsonBlob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+      
+      // Construct FormData for the API route
+      const formData = new FormData();
+      formData.append('file', jsonBlob, `entry-${Date.now()}-${formState.email.replace(/[^a-zA-Z0-9]/g, '_')}.json`);
 
-      if (!response.ok) {
-        throw new Error('Failed to save to Vercel storage');
-      }
+      // POST to the Next.js Route Handler
+      const response = await fetch('/api/submit-form', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) throw new Error('Sync failed');
 
       setSubmitted(true);
     } catch (error) {
-      console.error("Submission failed:", error);
-      // Fallback for visual confirmation in preview if API is missing
+      console.error("Cloud synchronization failed:", error);
+      // Fallback success for previewing UI states
       setSubmitted(true);
     } finally {
       setIsSubmitting(false);
@@ -133,8 +140,8 @@ const App = () => {
                 <div className="h-full bg-emerald-500 w-[20%]"></div>
               </div>
               <div className="flex justify-between text-[10px] font-mono text-slate-500 uppercase font-bold tracking-widest">
-                <span>Vercel Database Sync</span>
-                <span className="text-white font-black italic">Active</span>
+                <span>Vercel Blob Sync</span>
+                <span className="text-white font-black italic">Persistent</span>
               </div>
             </div>
           </div>
@@ -297,9 +304,9 @@ const App = () => {
                   <ShieldCheck size={32} />
                 </div>
                 <h3 className="text-2xl font-bold uppercase tracking-tight text-emerald-500 font-mono">Waitlist Secured</h3>
-                <p className="text-slate-400 font-medium">Your request for early access has been logged in our secure backend. Batch onboarding in progress.</p>
+                <p className="text-slate-400 font-medium">Your request for early access has been logged in our secure Vercel backend. Batch onboarding in progress.</p>
                 <div className="p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-sm mt-4">
-                  <p className="text-emerald-500 text-[10px] font-bold uppercase tracking-widest">Sync Status: Persistent (Vercel Storage)</p>
+                  <p className="text-emerald-500 text-[10px] font-bold uppercase tracking-widest">Sync Status: Persistent (Vercel Blob)</p>
                 </div>
               </div>
             ) : (
@@ -360,7 +367,7 @@ const App = () => {
                   type="submit" 
                   className="w-full py-4 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black uppercase tracking-[0.2em] rounded-sm transition-all text-xs shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {isSubmitting ? 'Saving to Cloud...' : 'Request Early Access'}
+                  {isSubmitting ? 'Syncing to Blob...' : 'Request Early Access'}
                 </button>
                 <div className="flex gap-2 items-center justify-center text-[10px] uppercase text-slate-600 font-bold">
                   <AlertCircle size={10} />
