@@ -67,20 +67,20 @@ const App = () => {
 
   const founders = [
     {
-      name: "Luke Phillips",
-      role: "Chief Technology Officer",
-      bio: "UC Berkeley Materials Science & Engineering. Former SpaceX Engineering Intern, owns full stack development.",
-      education: "Berkeley / SpaceX",
-      img: "https://media.licdn.com/dms/image/v2/D4E03AQEp6vMXYZRwIg/profile-displayphoto-crop_800_800/B4EZoFj9EwHMAI-/0/1761029903207?e=1772064000&v=beta&t=9OoMRDpWtgkAfYT5KJ8v0zKXpKSiN4xxWiMtCDxy4YQ",
-      linkedin: "https://www.linkedin.com/in/lukephillipseng/"
-    },
-    {
       name: "Leo Levitt",
       role: "Chief Executive Officer",
       bio: "Yale University Econ. Owns app mechanics and scaling.",
       education: "Yale",
       img: "https://media.licdn.com/dms/image/v2/D5603AQEMNrKzSCY-Cw/profile-displayphoto-shrink_800_800/profile-displayphoto-shrink_800_800/0/1730323194682?e=1772064000&v=beta&t=S-cKv0FJF4MMS2Jl9ah0WVYe_BOGklcJdVUj3RQyeTg",
       linkedin: "https://www.linkedin.com/in/leo-levitt-11411b177/"
+    },
+    {
+      name: "Luke Phillips",
+      role: "Chief Technology Officer",
+      bio: "UC Berkeley Materials Science & Engineering. Former SpaceX Engineering Intern, owns full stack development.",
+      education: "Berkeley / SpaceX",
+      img: "https://media.licdn.com/dms/image/v2/D4E03AQEp6vMXYZRwIg/profile-displayphoto-crop_800_800/B4EZoFj9EwHMAI-/0/1761029903207?e=1772064000&v=beta&t=9OoMRDpWtgkAfYT5KJ8v0zKXpKSiN4xxWiMtCDxy4YQ",
+      linkedin: "https://www.linkedin.com/in/lukephillipseng/"
     }
   ];
 
@@ -110,7 +110,7 @@ const App = () => {
           </div>
           <h1 className="text-5xl md:text-7xl font-bold leading-tight mb-6 tracking-tight">
             Get Paid to <br />
-            <span className="text-emerald-500 italic underline decoration-slate-800">Exit the Glass.</span>
+            <span className="text-emerald-500 italic underline decoration-slate-800">Stop Scrolling.</span>
           </h1>
           <p className="text-xl text-slate-400 mb-10 max-w-xl leading-relaxed italic font-medium">
             Scrollbet is the anti-social media. Monetize your discipline by betting against your own dopamine loops. 
@@ -142,8 +142,8 @@ const App = () => {
                 <div className="h-full bg-emerald-500 w-[20%]"></div>
               </div>
               <div className="flex justify-between text-[10px] font-mono text-slate-500 uppercase font-bold tracking-widest">
-                <span>Vercel Integration</span>
-                <span className="text-white font-black italic">Formspree Active</span>
+                <span>Proof of Omission</span>
+                <span className="text-white font-black italic">Active</span>
               </div>
             </div>
           </div>
@@ -155,7 +155,7 @@ const App = () => {
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold mb-4 italic uppercase tracking-tight">Focus Mechanics</h2>
-            <p className="text-slate-400 max-w-2xl mx-auto font-medium">Engineered for users who want to spend as little time in the app as possible.</p>
+            <p className="text-slate-400 max-w-2xl mx-auto font-medium">Engineered for users who want to reduce their screen time as effectively as possible.</p>
           </div>
           
           <div className="grid md:grid-cols-3 gap-8">
@@ -163,12 +163,12 @@ const App = () => {
               { 
                 icon: <TrendingDown className="text-emerald-500" size={32} />, 
                 title: "Asymmetric Betting", 
-                desc: "Predict a reduction of 10-20% from your current baseline. Stake capital on your own willpower." 
+                desc: "Attempt a reduction of 10-20% from your daily screentime. Lose if you go over, win if you go under." 
               },
               { 
                 icon: <DollarSign className="text-emerald-500" size={32} />, 
                 title: "Capital Yield", 
-                desc: "Win from the pool of failed discipline. Your offline hours are transformed into a tangible financial asset." 
+                desc: "Win from the pool of failed discipline. Your time away from the screen benefits you and your wallet." 
               },
               { 
                 icon: <EyeOff className="text-emerald-500" size={32} />, 
@@ -307,7 +307,7 @@ const App = () => {
                 </div>
                 <h3 className="text-2xl font-bold uppercase tracking-tight text-emerald-500 font-mono italic">Waitlist Secured</h3>
                 <p className="text-slate-400 font-medium text-lg px-4">Thanks for joining the attention refinery.</p>
-                <p className="text-slate-500 text-sm italic">Our team will reach out to verify your baseline metrics shortly.</p>
+                <p className="text-slate-500 text-sm italic">Our team will reach out as soon we launch early access</p>
                 <button 
                    onClick={() => setStatus({ ...status, succeeded: false })}
                    className="mt-8 text-[10px] uppercase font-black tracking-widest text-emerald-500 border border-emerald-500/20 px-6 py-3 rounded-sm hover:bg-emerald-500/5 transition-all"
@@ -405,13 +405,13 @@ const App = () => {
 
       {/* Footer */}
       <footer className="py-12 border-t border-slate-900 max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-8">
-        <div className="flex items-center gap-2 grayscale opacity-50">
-          <div className="w-6 h-6 bg-slate-500 rounded-sm rotate-45 flex items-center justify-center">
-            <div className="w-3 h-3 bg-slate-950 rounded-full"></div>
+        <div className="flex items-center gap-2">
+          <div className="w-8 h-8 bg-emerald-500 rounded-sm flex items-center justify-center shadow-[0_0_15px_rgba(16,185,129,0.4)]">
+             <TrendingDown size={20} className="text-slate-950 stroke-[3px]" />
           </div>
           <span className="text-lg font-bold tracking-tighter uppercase italic">Scrollbet</span>
         </div>
-        <p className="text-slate-600 text-[10px] uppercase tracking-[0.3em] text-center font-bold">© 2026 Scrollbet Inc — Reclaiming Life Outside the Glass</p>
+        <p className="text-slate-600 text-[10px] uppercase tracking-[0.3em] text-center font-bold">2026 Scrollbet Inc — We pay you to get off your phone.</p>
       </footer>
     </div>
   );
